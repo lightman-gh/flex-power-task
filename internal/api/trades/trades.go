@@ -4,10 +4,10 @@ import (
 	"flex/internal/dbschema/model"
 	"flex/internal/foundation/context"
 	"flex/internal/foundation/http/response"
+	"flex/internal/foundation/types"
 	"flex/internal/foundation/types/date"
 	service "flex/internal/usecase"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,19 +17,8 @@ func (handler *TradeHandler) registerTradesRoutes() {
 	handler.router.Trades.GET("", handler.handleGetTrades)
 }
 
-type Trade struct {
-	ID            string       `json:"id" binding:"required"`
-	Price         int32        `json:"price" binding:"required,gte=1"`
-	Quantity      int32        `json:"quantity" binding:"required,gte=1"`
-	Direction     string       `json:"direction" binding:"required"`
-	DeliveryDay   date.ISO8601 `json:"delivery_day" binding:"required"`
-	DeliveryHour  int32        `json:"delivery_hour" binding:"required,lte=23,gte=0"`
-	TraderId      string       `json:"trader_id" binding:"required"`
-	ExecutionTime time.Time    `json:"execution_time" binding:"required"`
-}
-
 func (handler *TradeHandler) handlePostTrade(ctx *gin.Context) {
-	var trade Trade
+	var trade types.Trade
 
 	if err := ctx.ShouldBindJSON(&trade); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response.Error(err.Error()))

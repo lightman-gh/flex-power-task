@@ -1,23 +1,25 @@
 # flex-power-task
 
-# Task 1
-
-## How to deploy
+# How to deploy
 ```
     make docker-build
     docker-compose up -d
 ``` 
 
-## How to test 
-```
-# Create user 
+# Create a new user 
+````
 curl --location 'http://127.0.0.1:8081/users' \
 --header 'Content-Type: application/json' \
 --data '{
     "username": "username",
     "password": "password"
 }'
+````
 
+# Task 1
+
+## How to test 
+```
 # Create new trade 
 curl --location 'http://127.0.0.1:8081/trades' \
 --header 'Content-Type: application/json' \
@@ -40,4 +42,13 @@ curl --location 'http://127.0.0.1:8081/trades?trader_id=anton&delivery_day=2023-
 --header 'Accept: application/json' \
 --header 'Authorization: Basic bGlnaHRtYW46cGFzc3dvcmQ=' \
 --data ''
+```
+
+# Task 2 
+
+## How to test 
+1. Update .env.trades with a correct username and password 
+2. You add file to a docker attached filesystem
+```
+ docker cp ./examples/epex_trades_20230220.csv {docker-container-id}:/examples/
 ```

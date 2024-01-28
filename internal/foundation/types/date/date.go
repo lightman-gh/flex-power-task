@@ -5,12 +5,16 @@ import (
 	"database/sql/driver"
 	"strings"
 	"time"
+
+	"github.com/gocarina/gocsv"
 )
 
 const Layout = "2006-01-02"
 
 var _ sql.Scanner = (*ISO8601)(nil)
 var _ driver.Valuer = (*ISO8601)(nil)
+
+var _ gocsv.TypeUnmarshaller = (*ISO8601)(nil)
 
 // ISO8601 is a wrapper for time.Time and supports
 // to save and marshal ordinary ISO8601 date values.
@@ -106,6 +110,18 @@ func (d *ISO8601) UnmarshalJSON(data []byte) error {
 	stringDate := strings.Replace(string(data), "T00:00:00Z", "", 1)
 
 	t, err := time.Parse(`"`+Layout+`"`, stringDate)
+	d.Time = t
+
+	return err
+}
+
+func (d *ISO8601) UnmarshalCSV(data string) error {
+	d.nil = data == "null"
+	if d.nil {
+		return nil
+	}
+
+	t, err := time.Parse(Layout, data)
 	d.Time = t
 
 	return err

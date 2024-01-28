@@ -2,8 +2,8 @@
 
 # How to deploy
 ```
-    make docker-build
-    docker-compose up -d
+make docker-build
+docker-compose up -d
 ``` 
 
 # Create a new user 
@@ -51,4 +51,20 @@ curl --location 'http://127.0.0.1:8081/trades?trader_id=anton&delivery_day=2023-
 2. You add file to a docker attached filesystem
 ```
  docker cp ./examples/epex_trades_20230220.csv {docker-container-id}:/examples/
+```
+
+# Task 3 
+## How to test 
+### Run built container 
+```
+ make docker-build
+ docker run --network backend  --env-file ./.env.report local/report:local
+```
+
+### API
+```
+curl --location 'http://127.0.0.1:8081/trades/pnl?trader_id=trader_1&delivery_day=2023-02-28' \
+--header 'Accept: application/json' \
+--header 'Authorization: Basic bGlnaHRtYW46cGFzc3dvcmQ=' \
+--data ''
 ```

@@ -48,13 +48,13 @@ services:
     restart: unless-stopped
     networks:
       - backend
-
     volumes:
       - type: volume
         source: trades
         target: /examples
         volume:
           nocopy: true
+
 networks:
   backend:
     name: backend

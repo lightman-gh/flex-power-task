@@ -15,6 +15,7 @@ import (
 func (handler *TradeHandler) registerTradesRoutes() {
 	handler.router.Trades.POST("", handler.handlePostTrade)
 	handler.router.Trades.GET("", handler.handleGetTrades)
+	handler.router.Trades.GET("pnl", handler.handleGetPnl)
 }
 
 func (handler *TradeHandler) handlePostTrade(ctx *gin.Context) {
@@ -81,6 +82,33 @@ func (handler *TradeHandler) handleGetTrades(ctx *gin.Context) {
 	}
 
 	trades, err := handler.trade.List(ctx, serviceQuery)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response.Error(err.Error()))
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, trades)
+}
+
+func (handler *TradeHandler) handleGetPnl(ctx *gin.Context) {
+	serviceQuery := &service.ListQuery{}
+	if tID := ctx.Query("trader_id"); tID != "" {
+		serviceQuery.TraderID = &tID
+	}
+
+	if dDate := ctx.Query("delivery_day"); dDate != "" {
+		pDate := date.ISO8601{}
+		if err := pDate.Scan(dDate); err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, response.Error("incorrect date format: %s", err.Error()))
+
+			return
+		}
+
+		serviceQuery.DeliveryDate = &pDate
+	}
+
+	trades, err := handler.trade.ComputePNL(ctx, serviceQuery)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response.Error(err.Error()))
 

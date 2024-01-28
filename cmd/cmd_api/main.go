@@ -14,7 +14,7 @@ import (
 
 type Config struct {
 	DatabaseURL string `env:"database_url"`
-	APIHost     string `env:"api_host, default=0.0.0.0:8080"`
+	APIHost     string `env:"api_host, default=0.0.0.0:8085"`
 }
 
 func main() {
@@ -26,9 +26,6 @@ func main() {
 	if err := envconfig.Process(context.TODO(), &cfg); err != nil {
 		logrus.Fatal(err)
 	}
-
-	//cfg.DatabaseURL = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", "postgres",
-	//	"postgres", "postgres", "5432", "backend")
 
 	_, dbClient := db.NewPostgresClient(cfg.DatabaseURL)
 	defer func() { _ = dbClient.Close() }()
